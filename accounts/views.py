@@ -1,14 +1,16 @@
 from django.shortcuts import render,redirect
 from django.views import generic 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import LoginForm
+from .forms import LoginForm,RegisterForm
 from django.contrib.auth import login,authenticate,logout
 from django.contrib import messages 
 from .mixins import LogOutRequiredMixins
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
+from django.urls import reverse_lazy
 
 # Create your views here.
+@method_decorator(never_cache,name='dispatch')
 class Home(LoginRequiredMixin, generic.TemplateView):
     login_url = 'login'
     template_name = 'accounts/home.html'
@@ -53,4 +55,10 @@ class Logout(generic.View):
     def get(self, *args, **kwargs):
         logout(self.request)
         return redirect('login')
+    
+
+class RegisterView(generic.CreateView):
+    template_name = 'accounts/register.html'
+    form_class = RegisterForm
+    success_url = reverse_lazy('login')
     
